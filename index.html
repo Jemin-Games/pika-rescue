@@ -2,47 +2,50 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>⚡ POKEMON: THE LEGENDARY RESCUE ⚡</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>⚡ POKEMON: MOBILE MASTER EDITION ⚡</title>
     <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Jua&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: #050505 url('PIC1.png') no-repeat center center fixed; background-size: cover; overflow: hidden; font-family: 'Jua', sans-serif; }
-        .main-container { display: flex; justify-content: center; align-items: flex-start; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(15px); border-radius: 30px; border: 2px solid rgba(255, 215, 0, 0.4); box-shadow: 0 0 80px rgba(0,0,0,1); overflow: hidden; position: relative; }
+        body { margin: 0; padding: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: #050505 url('PIC1.png') no-repeat center center fixed; background-size: cover; overflow: hidden; font-family: 'Jua', sans-serif; touch-action: none; }
+        .main-container { display: flex; justify-content: center; align-items: flex-start; background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(15px); border-radius: 30px; border: 2px solid rgba(255, 215, 0, 0.4); box-shadow: 0 0 80px rgba(0,0,0,1); position: relative; max-width: 95vw; }
         
+        /* 게임 메인 섹션 */
         .game-view { position: relative; width: 550px; height: 600px; background: #000; overflow: hidden; }
         canvas { display: block; width: 550px; height: 600px; cursor: default; } 
+
+        /* [추가] 모바일 조작패드 스타일 */
+        .mobile-ui { position: absolute; bottom: 20px; width: 100%; display: none; justify-content: space-between; padding: 0 30px; box-sizing: border-box; pointer-events: none; z-index: 1500; }
+        .d-pad { display: grid; grid-template-columns: repeat(3, 50px); grid-template-rows: repeat(3, 50px); gap: 5px; pointer-events: auto; }
+        .btn-m { width: 50px; height: 50px; background: rgba(255, 215, 0, 0.2); border: 2px solid rgba(255, 215, 0, 0.5); border-radius: 12px; color: gold; display: flex; justify-content: center; align-items: center; font-size: 20px; -webkit-user-select: none; }
+        .fire-btn { width: 80px; height: 80px; background: rgba(255, 215, 0, 0.3); border: 3px solid gold; border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 30px; pointer-events: auto; box-shadow: 0 0 15px gold; -webkit-user-select: none; margin-top: 30px; }
         
-        .showcase-window {
-            width: 160px; height: 600px; background: #050505; border-left: 2px solid rgba(255, 215, 0, 0.3); border-right: 2px solid rgba(255, 215, 0, 0.3);
-            display: flex; flex-direction: column; overflow: hidden;
-        }
+        /* 모바일 접속 시(터치 가능 기기) 조작패드 표시 */
+        @media (pointer: coarse) { .mobile-ui { display: flex; } }
+
+        /* 쇼케이스 창 */
+        .showcase-window { width: 160px; height: 600px; background: #050505; border-left: 2px solid rgba(255, 215, 0, 0.3); border-right: 2px solid rgba(255, 215, 0, 0.3); display: flex; flex-direction: column; overflow: hidden; }
         .showcase-header { color: #ffd700; text-align: center; font-family: 'Do Hyeon'; padding: 15px 0 10px 0; font-size: 18px; border-bottom: 1px solid rgba(255, 215, 0, 0.1); }
-        .showcase-grid { flex-grow: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffd700 #111; }
-        .showcase-grid::-webkit-scrollbar { width: 6px; }
-        .showcase-grid::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
-        .slot { width: 40px; height: 40px; border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 4px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; }
+        .showcase-grid { flex-grow: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; padding: 10px; overflow-y: auto; }
+        .slot { width: 40px; height: 40px; border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 4px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .slot img { width: 36px; height: 36px; image-rendering: pixelated; }
 
+        /* 사이드바 */
         .sidebar { width: 220px; height: 600px; background: rgba(5, 5, 5, 0.95); padding: 15px; display: flex; flex-direction: column; box-sizing: border-box; color: white; }
         .sidebar h2 { font-family: 'Do Hyeon', sans-serif; color: #ffd700; text-align: center; border-bottom: 2px solid rgba(255, 215, 0, 0.2); padding-bottom: 5px; margin: 0 0 10px 0; font-size: 16px; }
         .record-value { font-family: 'Do Hyeon', sans-serif; font-size: 18px; color: #ffd700; text-align: center; display: block; width: 100%; }
-        
-        .controls { margin-bottom: 10px; background: rgba(255, 215, 0, 0.03); padding: 8px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.1); }
-        .key-row { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: center; font-size: 11px; }
-        .key { background: #333; border: 1px solid #555; border-radius: 4px; padding: 1px 4px; font-weight: bold; color: #ffd700; font-size: 9px; }
-        
-        /* [수정 1] BGM 박스 하단 여백 최적화 (25px -> 15px) */
+        .controls { margin-bottom: 10px; background: rgba(255, 215, 0, 0.03); padding: 8px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.1); font-size: 11px; }
+        .key-row { display: flex; justify-content: space-between; margin-bottom: 4px; align-items: center; }
+        .key { background: #333; border: 1px solid #555; border-radius: 4px; padding: 1px 4px; color: #ffd700; font-size: 9px; }
         .bgm-info-box { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 215, 0, 0.1); border-radius: 8px; padding: 8px; margin-bottom: 15px; }
-        #mute-btn { width: 100%; background: #ffd700; border: none; border-radius: 4px; color: #000; cursor: pointer; font-family: 'Do Hyeon', sans-serif; font-size: 10px; padding: 4px; outline: none; transition: 0.2s; }
-        #mute-btn:hover { background: #fff; }
-        
+        #mute-btn { width: 100%; background: #ffd700; border: none; border-radius: 4px; color: #000; cursor: pointer; font-family: 'Do Hyeon', sans-serif; font-size: 10px; padding: 4px; outline: none; }
         #companion-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; border-top: 1px solid #222; }
-        .comp-item { display: flex; flex-direction: column; align-items: center; background: rgba(255, 215, 0, 0.05); margin: 6px 0; padding: 10px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.15); cursor: pointer; transition: 0.2s; }
+        .comp-item { display: flex; flex-direction: column; align-items: center; background: rgba(255, 215, 0, 0.05); margin: 6px 0; padding: 10px; border-radius: 12px; border: 1px solid rgba(255, 215, 0, 0.15); cursor: pointer; }
         .comp-item img { width: 60px; height: 60px; image-rendering: pixelated; }
 
+        /* 오버레이 */
         #overlay { position: absolute; top: 0; left: 0; width: 710px; height: 100%; background: rgba(0,0,0,0.96); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; overflow: hidden; }
         #start-btn { padding: 15px 45px; font-size: 24px; cursor: pointer; background: #ffd700; border: none; border-radius: 12px; font-weight: bold; font-family: 'Do Hyeon'; box-shadow: 0 0 25px gold; position: relative; z-index: 2005; pointer-events: auto; }
-
-        .giant-shadow { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; background: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png') no-repeat center; background-size: contain; filter: brightness(0) invert(0.4) drop-shadow(0 0 30px gold); opacity: 0.3; z-index: 1001; animation: stompGlow 0.8s ease-in-out infinite alternate; }
+        .giant-shadow { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 500px; background: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png') no-repeat center; background-size: contain; opacity: 0.3; z-index: 1001; animation: stompGlow 0.8s ease-in-out infinite alternate; }
         @keyframes stompGlow { 0% { transform: translate(-50%, -50%) scale(1) rotate(-1deg); } 100% { transform: translate(-50%, -50%) scale(1.05) rotate(1deg); } }
     </style>
 </head>
@@ -52,13 +55,23 @@
             <div class="giant-shadow"></div>
             <div id="overlay-content" style="text-align:center; color:white; position:relative; z-index:1006;">
                 <h1 style="font-family:'Do Hyeon'; font-size:55px; color:#ffd700; margin-bottom: 5px;">숲의 구조대</h1>
-                <p style="color:#fff; font-size:22px; margin-bottom:25px; text-shadow: 0 0 10px gold;">151마리의 동료 포켓몬을 전부 구해라!!</p>
+                <p style="color:#fff; font-size:20px; margin-bottom:25px; text-shadow: 0 0 10px gold;">151마리의 동료 포켓몬을 전부 구해라!!</p>
             </div>
             <button id="start-btn" onclick="startGame()">작전 개시</button>
         </div>
 
         <div class="game-view">
             <canvas id="game" width="550" height="600"></canvas>
+            
+            <div class="mobile-ui">
+                <div class="d-pad">
+                    <div></div><div class="btn-m" id="m-up">▲</div><div></div>
+                    <div class="btn-m" id="m-left">◀</div><div></div><div class="btn-m" id="m-right">▶</div>
+                    <div></div><div class="btn-m" id="m-down">▼</div><div></div>
+                </div>
+                <div class="fire-btn" id="m-fire">⚡</div>
+            </div>
+
             <div style="position: absolute; top: 15px; left: 20px; color: #ffd700; font-size: 15px; font-weight: bold; pointer-events: none; text-shadow: 2px 2px #000; z-index: 10;">
                 점수: <span id="score-ui">0</span> | <span id="stage-ui">스테이지 1</span> | 공격 Lv.<span id="atk-lv">1</span>
             </div>
@@ -71,15 +84,15 @@
 
         <div class="sidebar">
             <h2>남은 시간</h2>
-            <div id="timer-box" style="background:rgba(255,215,0,0.05); border:1px solid #ffd700; border-radius:8px; padding:5px; margin-bottom:10px; text-align:center;"><div id="time-ui" class="record-value">05:00</div></div>
+            <div style="background:rgba(255,215,0,0.05); border:1px solid #ffd700; border-radius:8px; padding:5px; margin-bottom:10px; text-align:center;"><div id="time-ui" class="record-value">05:00</div></div>
             <h2>명예의 전당</h2>
             <div style="background:rgba(255,215,0,0.1); border:1px solid #ffd700; border-radius:8px; padding:5px; margin-bottom:10px; text-align:center;"><div id="best-score-ui" class="record-value" style="color:#fff;">0</div></div>
             <h2>시스템 제어</h2>
             <div class="controls">
-                <div class="key-row"><span>이동</span> <span class="key">WASD</span></div>
-                <div class="key-row"><span>공격</span> <span class="key">Space</span></div>
+                <div class="key-row"><span>이동</span> <span class="key">WASD / 터치</span></div>
+                <div class="key-row"><span>공격</span> <span class="key">Space / ⚡</span></div>
                 <div class="key-row"><span>일시정지</span> <span class="key">P 키</span></div>
-                <div class="key-row"><span>캐릭터 변경</span> <span class="key">구한동료 클릭</span></div>
+                <div class="key-row"><span>캐릭터 변경</span> <span class="key">동료 클릭</span></div>
                 <div class="key-row"><span>자동공격</span> <span class="key">Lv.7 이상</span></div>
             </div>
             <div class="bgm-info-box">
@@ -102,8 +115,7 @@
         const bossIds = [94, 130, 59, 65, 68, 3, 6, 9, 149, 144, 145, 146, 151, 143, 150];
 
         function getPkType(id) {
-            if(!id) return {name:'전기', color:'#fff700'};
-            const fire=[4,5,6,37,38,58,59,77,78,126,136,146], water=[7,8,9,54,55,60,61,62,72,73,79,80,86,87,90,91,98,99,116,117,118,119,120,121,129,130,131,134], grass=[1,2,3,43,44,45,46,47,69,70,71,102,103,114], electric=[25,26,81,82,100,101,125,135,145], psychic=[63,64,65,92,93,94,96,97,121,122,150,151];
+            const electric=[25,26,81,82,100,101,125,135,145], fire=[4,5,6,37,38,58,59,77,78,126,136,146], water=[7,8,9,54,55,60,61,62,72,73,79,80,86,87,90,91,98,99,116,117,118,119,120,121,129,130,131,134], grass=[1,2,3,43,44,45,46,47,69,70,71,102,103,114];
             if(electric.includes(id)) return {name:'전기', color:'#fff700'}; if(fire.includes(id)) return {name:'불꽃', color:'#ff4400'}; if(water.includes(id)) return {name:'물', color:'#0088ff'}; if(grass.includes(id)) return {name:'풀', color:'#22ff22'}; return {name:'노멀', color:'#ffffff'};
         }
 
@@ -118,22 +130,37 @@
 
         let player = { x: 275, y: 500, pwr: 1, type: getPkType(25), inv: 0 };
         let enemies = [], bullets = [], eBullets = [], items = [], keys = {}, score = 0, gameActive = false, lastRescue = 0, currentStage = 1, frameCount = 0, remainingTime = 300, ballsThisStage = 0;
-        let boss = { active: false, dying: false, deathTimer: 0, x: 275, y: 60, hp: 100, maxHp: 100, spd: 3, dir: 1, img: new Image(), size: 220, hitBox: 100 };
-        let animationId, isMuted = false, splashEffects = [], isPaused = false;
+        let boss = { active: false, dying: false, deathTimer: 0, x: 275, y: 60, hp: 100, maxHp: 100, spd: 3, dir: 1, img: new Image(), hitBox: 100 };
+        let isMuted = false, isPaused = false, animationId;
         const bgm = new Audio('BGM1.mp3'); bgm.loop = true;
 
-        let bestScore = localStorage.getItem('poke_best_score') || 0;
-        document.getElementById('best-score-ui').innerText = Number(bestScore).toLocaleString();
-
-        window.onkeydown = (e) => { if (e.code === 'Space') e.preventDefault(); keys[e.code] = true; if (e.code === 'KeyP' && gameActive) isPaused = !isPaused; if (e.code === 'Space' && gameActive && !boss.dying && !isPaused) spawnBullet(); };
+        window.onkeydown = (e) => { 
+            if (e.code === 'Space') e.preventDefault();
+            keys[e.code] = true; 
+            if (e.code === 'KeyP' && gameActive) isPaused = !isPaused;
+            if (e.code === 'Space' && gameActive && !boss.dying && !isPaused) spawnBullet(); 
+        };
         window.onkeyup = (e) => { keys[e.code] = false; };
+
+        // [추가] 모바일 터치 이벤트 리스너 통합
+        const addTouch = (id, key) => {
+            const el = document.getElementById(id);
+            el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; if(id === 'm-fire' && gameActive && !isPaused) spawnBullet(); });
+            el.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; });
+        };
+        addTouch('m-up', 'KeyW'); addTouch('m-down', 'KeyS'); addTouch('m-left', 'KeyA'); addTouch('m-right', 'KeyD'); addTouch('m-fire', 'Space');
 
         function updateGalleryAndShowcase(id, src) {
             if (!id) return;
-            const li = document.createElement('li'); li.className = 'comp-item'; li.onclick = () => { img.player.src = src; player.type = getPkType(id); }; 
-            li.innerHTML = `<img src="${src}"><div class="pk-info">No.${id} ${pkNames[id-1]}</div>`; listEl.prepend(li);
             const slot = document.getElementById('slot-' + id);
-            if (slot) { slot.innerHTML = `<img src="${src}">`; slot.onclick = () => { img.player.src = src; player.type = getPkType(id); }; }
+            if (slot) { 
+                slot.innerHTML = `<img src="${src}">`; 
+                slot.onclick = () => { img.player.src = src; player.type = getPkType(id); }; 
+            }
+            const li = document.createElement('li'); li.className = 'comp-item'; 
+            li.onclick = () => { img.player.src = src; player.type = getPkType(id); }; 
+            li.innerHTML = `<img src="${src}"><div class="pk-info">No.${id} ${pkNames[id-1]}</div>`;
+            listEl.prepend(li);
         }
 
         function toggleBGM(event) { isMuted = !isMuted; const btn = document.getElementById('mute-btn'); if(isMuted) { bgm.pause(); btn.innerText = "BGM OFF"; btn.style.background = "#888"; btn.style.color = "#fff"; } else { if(gameActive) bgm.play(); btn.innerText = "BGM ON"; btn.style.background = "#ffd700"; btn.style.color = "#000"; } btn.blur(); }
@@ -141,8 +168,8 @@
         function startGame() { 
             if (animationId) cancelAnimationFrame(animationId);
             document.getElementById('overlay').style.display = 'none';
-            enemies = []; bullets = []; eBullets = []; items = []; splashEffects = [];
-            player.x = 275; player.y = 500; player.inv = 120; ballsThisStage = 0;
+            enemies = []; bullets = []; eBullets = []; items = []; ballsThisStage = 0;
+            player.x = 275; player.y = 500; player.inv = 120;
             remainingTime = 300; gameActive = true; isPaused = false;
             document.getElementById('stage-ui').innerText = '스테이지 ' + currentStage;
             if(!isMuted) bgm.play().catch(()=>{}); loop(); 
@@ -150,7 +177,10 @@
 
         function spawnBullet() {
             const count = Math.min(3, player.pwr);
-            for(let i=0; i<count; i++) { const angle = (i - (count-1)/2) * 0.22; bullets.push({x: player.x, y: player.y - 20, vx: angle * 15, vy: -14, dmg: 1, color: player.type.color}); }
+            for(let i=0; i<count; i++) { 
+                const angle = (i - (count-1)/2) * 0.22; 
+                bullets.push({x: player.x, y: player.y - 20, vx: angle * 15, vy: -14, dmg: 1, color: player.type.color}); 
+            }
         }
 
         function loop() {
@@ -159,11 +189,7 @@
             if (boss.dying) { boss.deathTimer++; if (boss.deathTimer > 60) { player.y -= 12; if (player.y < -100) { boss.active = false; boss.dying = false; clearStage(); return; } } }
             else {
                 frameCount++;
-                if(frameCount % 60 === 0) {
-                    remainingTime--;
-                    document.getElementById('time-ui').innerText = String(Math.floor(remainingTime / 60)).padStart(2,'0') + ':' + String(remainingTime % 60).padStart(2,'0');
-                    if(remainingTime <= 0) gameOver();
-                }
+                if(frameCount % 60 === 0) { remainingTime--; document.getElementById('time-ui').innerText = String(Math.floor(remainingTime / 60)).padStart(2,'0') + ':' + String(remainingTime % 60).padStart(2,'0'); if(remainingTime <= 0) gameOver(); }
                 if (Math.random() < 0.02 + (currentStage * 0.005)) { enemies.push({ x: Math.random()*470+40, y: -50, spd: 2.2 + currentStage*0.3, type: Math.min(2, Math.floor(currentStage/6)), hp: Math.ceil(currentStage/1.5)*2, flash: 0 }); }
                 if (keys['KeyW']) player.y -= 8; if (keys['KeyS']) player.y += 8; if (keys['KeyA']) player.x -= 8; if (keys['KeyD']) player.x += 8;
                 player.x = Math.max(40, Math.min(player.x, 510)); player.y = Math.max(40, Math.min(player.y, 560));
@@ -186,12 +212,8 @@
                 document.getElementById('score-ui').innerText = Math.floor(score).toLocaleString();
                 document.getElementById('atk-lv').innerText = player.pwr;
             }
-            ctx.clearRect(0, 0, 550, 600);
-            if (img.bg.complete) ctx.drawImage(img.bg, 0, 0, 550, 600);
-            if (boss.active) {
-                ctx.save(); if (boss.dying) ctx.filter = 'brightness(200%)'; ctx.drawImage(boss.img, boss.x-110, boss.y-110, 220, 220); ctx.restore();
-                if (!boss.dying) { ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(boss.x-82, 18, 164, 12); ctx.fillStyle = "red"; ctx.fillRect(boss.x-80, 20, 160, 8); ctx.fillStyle = "lime"; ctx.fillRect(boss.x-80, 20, (boss.hp/boss.maxHp)*160, 8); }
-            }
+            ctx.clearRect(0, 0, 550, 600); if (img.bg.complete) ctx.drawImage(img.bg, 0, 0, 550, 600);
+            if (boss.active) { ctx.save(); if (boss.dying) ctx.filter = 'brightness(200%)'; ctx.drawImage(boss.img, boss.x-110, boss.y-110, 220, 220); ctx.restore(); if (!boss.dying) { ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(boss.x-82, 18, 164, 12); ctx.fillStyle = "red"; ctx.fillRect(boss.x-80, 20, 160, 8); ctx.fillStyle = "lime"; ctx.fillRect(boss.x-80, 20, (boss.hp/boss.maxHp)*160, 8); } }
             eBullets.forEach(eb => { ctx.fillStyle = "#f0f"; ctx.beginPath(); ctx.arc(eb.x, eb.y, 10, 0, Math.PI*2); ctx.fill(); });
             bullets.forEach(b => { ctx.fillStyle = b.color; ctx.beginPath(); ctx.arc(b.x, b.y, 8, 0, Math.PI*2); ctx.fill(); });
             items.forEach(it => { ctx.save(); ctx.translate(it.x, it.y); ctx.rotate(it.rot); ctx.drawImage(img.item, -18, -18, 36, 36); ctx.restore(); });
@@ -202,25 +224,7 @@
 
         function spawnBoss() { boss.active = true; boss.hp = 100 + currentStage*150; boss.maxHp = boss.hp; boss.img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + bossIds[(currentStage-1)%bossIds.length] + '.png'; }
         function gameOver() { location.reload(); }
-        
-        function clearStage() { 
-            gameActive = false; cancelAnimationFrame(animationId);
-            const timeBonus = remainingTime * 20; const ballBonus = ballsThisStage * 5000;
-            score += timeBonus;
-            document.getElementById('score-ui').innerText = Math.floor(score).toLocaleString();
-            document.getElementById('overlay-content').innerHTML = `
-                <h1 style="color:#ffd700; font-size:40px;">STAGE ${currentStage} CLEAR!</h1>
-                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; border:1px solid gold; margin-top:10px;">
-                    <p style="color:#fff;">시간 보너스: +${timeBonus.toLocaleString()}점</p>
-                    <p style="color:#fff;">아이템 보너스: +${ballBonus.toLocaleString()}점</p>
-                    <p style="color:#ffd700; font-weight:bold;">보스 처치 보너스: +10,000점 (획득)</p>
-                    <h2 style="color:gold; border-top:1px solid rgba(255,215,0,0.3); padding-top:10px; margin-top:10px;">누적 총점: ${Math.floor(score).toLocaleString()}</h2>
-                </div>
-            `;
-            document.getElementById('start-btn').innerText = "다음 지역으로 진격";
-            document.getElementById('start-btn').onclick = () => { currentStage++; startGame(); };
-            document.getElementById('overlay').style.display = 'flex';
-        }
+        function clearStage() { gameActive = false; cancelAnimationFrame(animationId); const timeBonus = remainingTime * 20; const ballBonus = ballsThisStage * 5000; score += timeBonus; document.getElementById('score-ui').innerText = Math.floor(score).toLocaleString(); document.getElementById('overlay-content').innerHTML = `<h1 style="color:#ffd700; font-size:40px;">STAGE ${currentStage} CLEAR!</h1><div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; border:1px solid gold; margin-top:10px;"><p style="color:#fff;">시간 보너스: +${timeBonus.toLocaleString()}점</p><p style="color:#fff;">아이템 보너스: +${ballBonus.toLocaleString()}점</p><p style="color:#ffd700; font-weight:bold;">보스 처치 보너스: +10,000점 (획득)</p><h2 style="color:gold;">누적 총점: ${Math.floor(score).toLocaleString()}</h2></div>`; document.getElementById('start-btn').innerText = "다음 지역으로 진격"; document.getElementById('start-btn').onclick = () => { currentStage++; startGame(); }; document.getElementById('overlay').style.display = 'flex'; }
         window.onload = () => { updateGalleryAndShowcase(25, 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png'); };
     </script>
 </body>
